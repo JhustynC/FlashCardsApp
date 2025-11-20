@@ -203,10 +203,22 @@ export default function App() {
     if (current.type === 'separator') {
       return (
         <div className="flex flex-col items-center gap-4 w-full px-4">
-          <div className="w-full max-w-md p-6 border border-slate-600 rounded bg-slate-700 text-white text-lg sm:text-xl font-bold text-center">{current.title}</div>
+          <div 
+            className="relative w-full max-w-md h-[400px] border-2 border-slate-500 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-700 flex items-center justify-center text-white text-lg sm:text-xl font-bold text-center p-6 touch-none"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="absolute top-3 left-3 px-2 py-1 bg-slate-800 text-slate-200 text-xs font-bold rounded uppercase tracking-wide">
+              Archivo
+            </div>
+            <span className="break-words overflow-auto max-h-full w-full mt-8 px-2">{current.title}</span>
+          </div>
+          {/* Indicador de swipe en móvil */}
+          <div className="text-xs text-slate-400 sm:hidden">Desliza ← → para cambiar de tarjeta</div>
           <div className="flex gap-4 w-full max-w-md justify-center">
-            <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">Anterior</button>
-            <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">Siguiente</button>
+            <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex-1 max-w-[120px]">Anterior</button>
+            <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex-1 max-w-[120px]">Siguiente</button>
           </div>
           <div className="text-sm text-slate-300">{index+1} / {cards.length}</div>
         </div>
