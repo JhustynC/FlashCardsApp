@@ -163,21 +163,50 @@ export default function App() {
   function FlashcardViewer({ cards }) {
     const [index, setIndex] = React.useState(0);
     const [flip, setFlip] = React.useState(false);
+    const [touchStart, setTouchStart] = React.useState(null);
+    const [touchEnd, setTouchEnd] = React.useState(null);
 
     const current = cards[index];
 
+    // Distancia mínima para considerar un swipe
+    const minSwipeDistance = 50;
+
     function next() { setFlip(false); setIndex(i => Math.min(i+1, cards.length-1)); }
     function prev() { setFlip(false); setIndex(i => Math.max(i-1, 0)); }
+
+    const onTouchStart = (e) => {
+      setTouchEnd(null);
+      setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => {
+      setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+      
+      const distance = touchStart - touchEnd;
+      const isLeftSwipe = distance > minSwipeDistance;
+      const isRightSwipe = distance < -minSwipeDistance;
+
+      if (isLeftSwipe && index < cards.length - 1) {
+        next();
+      }
+      if (isRightSwipe && index > 0) {
+        prev();
+      }
+    };
 
     if (!current) return null;
 
     if (current.type === 'separator') {
       return (
-        <div className="flex flex-col items-center gap-4">
-          <div className="p-6 border border-slate-600 rounded bg-slate-700 text-white text-xl font-bold">{current.title}</div>
-          <div className="flex gap-4">
-            <button onClick={prev} disabled={index===0} className="px-3 py-1 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-            <button onClick={next} disabled={index===cards.length-1} className="px-3 py-1 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Siguiente</button>
+        <div className="flex flex-col items-center gap-4 w-full px-4">
+          <div className="w-full max-w-md p-6 border border-slate-600 rounded bg-slate-700 text-white text-lg sm:text-xl font-bold text-center">{current.title}</div>
+          <div className="flex gap-4 w-full max-w-md justify-center">
+            <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">Anterior</button>
+            <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">Siguiente</button>
           </div>
           <div className="text-sm text-slate-300">{index+1} / {cards.length}</div>
         </div>
@@ -185,28 +214,38 @@ export default function App() {
     }
 
     return (
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative w-96 min-h-[300px] perspective cursor-pointer" onClick={() => setFlip(f => !f)}>
+      <div className="flex flex-col items-center gap-4 w-full px-4">
+        {/* Tarjeta con tamaño fijo y soporte para swipe */}
+        <div 
+          className="relative w-full max-w-md h-[400px] perspective cursor-pointer touch-none"
+          onClick={() => setFlip(f => !f)}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <div className={`card-inner ${flip ? 'is-flipped' : ''}`}>
             {/* Cara frontal - PREGUNTA */}
-            <div className="card-face card-front p-6 border-2 border-blue-500 rounded-lg bg-gradient-to-br from-blue-900 via-blue-800 to-slate-800 flex flex-col items-center justify-center relative">
-              <div className="absolute top-3 left-3 px-2 py-1 bg-blue-600 text-blue-100 text-xs font-bold rounded uppercase tracking-wide">
+            <div className="card-face card-front p-4 sm:p-6 border-2 border-blue-500 rounded-lg bg-gradient-to-br from-blue-900 via-blue-800 to-slate-800 flex flex-col items-center justify-center relative">
+              <div className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-1 bg-blue-600 text-blue-100 text-xs font-bold rounded uppercase tracking-wide">
                 Pregunta
               </div>
-              <span className="font-semibold text-center text-white text-xl break-words overflow-auto max-h-full w-full mt-6">{current.question || '(Sin pregunta)'}</span>
+              <span className="font-semibold text-center text-white text-base sm:text-xl break-words overflow-auto w-full mt-8 px-2">{current.question || '(Sin pregunta)'}</span>
             </div>
             {/* Cara trasera - RESPUESTA */}
-            <div className="card-face card-back p-6 border-2 border-purple-500 rounded-lg bg-gradient-to-br from-purple-900 via-purple-800 to-slate-800 flex flex-col items-center justify-center relative">
-              <div className="absolute top-3 left-3 px-2 py-1 bg-purple-600 text-purple-100 text-xs font-bold rounded uppercase tracking-wide">
+            <div className="card-face card-back p-4 sm:p-6 border-2 border-purple-500 rounded-lg bg-gradient-to-br from-purple-900 via-purple-800 to-slate-800 flex flex-col items-center justify-center relative">
+              <div className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-1 bg-purple-600 text-purple-100 text-xs font-bold rounded uppercase tracking-wide">
                 Respuesta
               </div>
-              <span className="font-semibold text-center text-white text-xl break-words overflow-auto max-h-full w-full mt-6">{current.answer || '(Sin respuesta)'}</span>
+              <span className="font-semibold text-center text-white text-base sm:text-xl break-words overflow-auto w-full mt-8 px-2">{current.answer || '(Sin respuesta)'}</span>
             </div>
           </div>
         </div>
-        <div className="flex gap-4">
-          <button onClick={prev} disabled={index===0} className="px-3 py-1 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-          <button onClick={next} disabled={index===cards.length-1} className="px-3 py-1 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Siguiente</button>
+        {/* Indicador de swipe en móvil */}
+        <div className="text-xs text-slate-400 sm:hidden">Desliza ← → para cambiar de tarjeta</div>
+        {/* Botones de navegación */}
+        <div className="flex gap-4 w-full max-w-md justify-center">
+          <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex-1 max-w-[120px]">Anterior</button>
+          <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex-1 max-w-[120px]">Siguiente</button>
         </div>
         <div className="text-sm text-slate-300">{index+1} / {cards.length}</div>
       </div>
@@ -214,32 +253,32 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-slate-900 text-white">
+    <div className="min-h-screen p-3 sm:p-6 bg-slate-900 text-white">
       <div className="max-w-5xl mx-auto">
-        <header className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Flashcards — Carga de CSVs</h1>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 rounded shadow-sm border border-slate-600 bg-slate-700 text-white hover:bg-slate-600" onClick={clearAll}>Limpiar</button>
-            <button className="px-3 py-1 rounded shadow-sm border border-slate-600 bg-slate-700 text-white hover:bg-slate-600" onClick={exportAllAsCSV}>Exportar CSV</button>
+        <header className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Flashcards — Carga de CSVs</h1>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button className="px-3 py-1.5 rounded shadow-sm border border-slate-600 bg-slate-700 text-white hover:bg-slate-600 text-sm sm:text-base flex-1 sm:flex-none" onClick={clearAll}>Limpiar</button>
+            <button className="px-3 py-1.5 rounded shadow-sm border border-slate-600 bg-slate-700 text-white hover:bg-slate-600 text-sm sm:text-base flex-1 sm:flex-none" onClick={exportAllAsCSV}>Exportar CSV</button>
           </div>
         </header>
 
-        <section className="mb-6 grid gap-3 md:grid-cols-2">
-          <div className="p-4 border border-slate-600 rounded bg-slate-800">
-            <label className="block mb-2 font-medium text-white">Subir archivos CSV (múltiples)</label>
-            <input ref={fileInputRef} type="file" accept=".csv,text/csv" multiple onChange={(e) => handleFiles(e.target.files)} className="text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600" />
-            <p className="text-sm mt-2 text-slate-300">Formato: sin encabezados. Columna 1 = pregunta, Columna 2 = respuesta.</p>
+        <section className="mb-4 sm:mb-6 grid gap-3 md:grid-cols-2">
+          <div className="p-3 sm:p-4 border border-slate-600 rounded bg-slate-800">
+            <label className="block mb-2 font-medium text-white text-sm sm:text-base">Subir archivos CSV (múltiples)</label>
+            <input ref={fileInputRef} type="file" accept=".csv,text/csv" multiple onChange={(e) => handleFiles(e.target.files)} className="w-full text-white file:mr-4 file:py-2 file:px-3 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 text-xs sm:text-sm" />
+            <p className="text-xs sm:text-sm mt-2 text-slate-300">Formato: sin encabezados. Columna 1 = pregunta, Columna 2 = respuesta.</p>
           </div>
 
-          <div className="p-4 border border-slate-600 rounded bg-slate-800">
-            <label className="block mb-2 font-medium text-white">Cargar desde URL (ejemplo)</label>
-            <div className="flex gap-2">
-              <input className="flex-1 p-1 border border-slate-600 rounded bg-slate-700 text-white placeholder-slate-400" placeholder="URL del CSV" id="urlInput" />
-              <button className="px-3 py-1 rounded border border-slate-600 bg-slate-700 text-white hover:bg-slate-600" onClick={() => loadFromUrl(document.getElementById('urlInput').value)}>Cargar</button>
+          <div className="p-3 sm:p-4 border border-slate-600 rounded bg-slate-800">
+            <label className="block mb-2 font-medium text-white text-sm sm:text-base">Cargar desde URL</label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input className="flex-1 p-1.5 sm:p-1 border border-slate-600 rounded bg-slate-700 text-white placeholder-slate-400 text-sm" placeholder="URL del CSV" id="urlInput" />
+              <button className="px-3 py-1.5 sm:py-1 rounded border border-slate-600 bg-slate-700 text-white hover:bg-slate-600 text-sm sm:text-base" onClick={() => loadFromUrl(document.getElementById('urlInput').value)}>Cargar</button>
             </div>
-            <p className="mt-2 text-sm text-slate-300">Si quieres cargar el CSV que ya subiste al servidor local, usa su ruta aquí.</p>
+            <p className="mt-2 text-xs sm:text-sm text-slate-300">Si quieres cargar el CSV que ya subiste al servidor local, usa su ruta aquí.</p>
             <div className="mt-3">
-              <button className="px-3 py-1 rounded border border-slate-600 bg-slate-700 text-white hover:bg-slate-600" onClick={() => loadFromUrl('/mnt/data/Tecnologias 1.csv')}>Cargar ejemplo: Tecnologias 1.csv</button>
+              <button className="px-3 py-1.5 rounded border border-slate-600 bg-slate-700 text-white hover:bg-slate-600 text-xs sm:text-sm w-full sm:w-auto" onClick={() => loadFromUrl('/mnt/data/Tecnologias 1.csv')}>Cargar ejemplo: Tecnologias 1.csv</button>
             </div>
           </div>
         </section>
@@ -254,15 +293,15 @@ export default function App() {
           )}
         </main>
 
-        <footer className="mt-6 text-sm text-slate-400">Haz click en una tarjeta para verla por el otro lado. Cada CSV agregado comienza con una tarjeta que muestra su nombre.</footer>
+        <footer className="mt-4 sm:mt-6 text-xs sm:text-sm text-slate-400 px-4 text-center">Haz click en una tarjeta para verla por el otro lado. Cada CSV agregado comienza con una tarjeta que muestra su nombre.</footer>
       </div>
 
       {/* Estilos mínimos para efecto flip */}
       <style>{`
         .perspective { perspective: 1000px; }
-        .card-inner { position: relative; width: 100%; height: 100%; min-height: 300px; transform-style: preserve-3d; transition: transform 0.4s; }
+        .card-inner { position: relative; width: 100%; height: 400px; transform-style: preserve-3d; transition: transform 0.4s; }
         .card-inner.is-flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; inset: 0; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        .card-face { position: absolute; inset: 0; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; overflow: auto; height: 400px; }
         .card-back { transform: rotateY(180deg); }
       `}</style>
     </div>
