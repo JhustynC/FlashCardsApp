@@ -188,11 +188,19 @@ export default function App() {
       <div className="flex flex-col items-center gap-4">
         <div className="relative w-96 min-h-[300px] perspective cursor-pointer" onClick={() => setFlip(f => !f)}>
           <div className={`card-inner ${flip ? 'is-flipped' : ''}`}>
-            <div className="card-face card-front p-6 border border-slate-600 rounded bg-slate-800 flex items-center justify-center">
-              <span className="font-medium text-center text-white text-lg break-words overflow-auto max-h-full w-full">{current.question || '(Sin pregunta)'}</span>
+            {/* Cara frontal - PREGUNTA */}
+            <div className="card-face card-front p-6 border-2 border-blue-500 rounded-lg bg-gradient-to-br from-blue-900 via-blue-800 to-slate-800 flex flex-col items-center justify-center relative">
+              <div className="absolute top-3 left-3 px-2 py-1 bg-blue-600 text-blue-100 text-xs font-bold rounded uppercase tracking-wide">
+                Pregunta
+              </div>
+              <span className="font-semibold text-center text-white text-xl break-words overflow-auto max-h-full w-full mt-6">{current.question || '(Sin pregunta)'}</span>
             </div>
-            <div className="card-face card-back p-6 border border-slate-600 rounded bg-slate-800 flex items-center justify-center">
-              <span className="font-medium text-center text-white text-lg break-words overflow-auto max-h-full w-full">{current.answer || '(Sin respuesta)'}</span>
+            {/* Cara trasera - RESPUESTA */}
+            <div className="card-face card-back p-6 border-2 border-purple-500 rounded-lg bg-gradient-to-br from-purple-900 via-purple-800 to-slate-800 flex flex-col items-center justify-center relative">
+              <div className="absolute top-3 left-3 px-2 py-1 bg-purple-600 text-purple-100 text-xs font-bold rounded uppercase tracking-wide">
+                Respuesta
+              </div>
+              <span className="font-semibold text-center text-white text-xl break-words overflow-auto max-h-full w-full mt-6">{current.answer || '(Sin respuesta)'}</span>
             </div>
           </div>
         </div>
