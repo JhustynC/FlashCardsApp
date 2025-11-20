@@ -227,10 +227,10 @@ export default function App() {
             </>
           )}
           {focusMode && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 items-center z-10">
-              <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">←</button>
-              <span className="text-slate-300 px-4">{index+1} / {cards.length}</span>
-              <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">→</button>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-4 items-center z-10 whitespace-nowrap">
+              <button onClick={prev} disabled={index===0} className="px-3 py-2 sm:px-4 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">←</button>
+              <span className="text-slate-300 px-2 sm:px-4 whitespace-nowrap text-sm sm:text-base">{index+1} / {cards.length}</span>
+              <button onClick={next} disabled={index===cards.length-1} className="px-3 py-2 sm:px-4 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">→</button>
             </div>
           )}
         </div>
@@ -277,10 +277,10 @@ export default function App() {
           </>
         )}
         {focusMode && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 items-center z-10">
-            <button onClick={prev} disabled={index===0} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">←</button>
-            <span className="text-slate-300 px-4">{index+1} / {cards.length}</span>
-            <button onClick={next} disabled={index===cards.length-1} className="px-4 py-2 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">→</button>
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-4 items-center z-10 whitespace-nowrap">
+            <button onClick={prev} disabled={index===0} className="px-3 py-2 sm:px-4 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">←</button>
+            <span className="text-slate-300 px-2 sm:px-4 whitespace-nowrap text-sm sm:text-base">{index+1} / {cards.length}</span>
+            <button onClick={next} disabled={index===cards.length-1} className="px-3 py-2 sm:px-4 border border-slate-600 rounded bg-slate-700 text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-base">→</button>
           </div>
         )}
       </div>
